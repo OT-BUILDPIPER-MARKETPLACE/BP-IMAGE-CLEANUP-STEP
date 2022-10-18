@@ -14,7 +14,7 @@ then
     logErrorMessage "Image name is not available in BP data as well please check!!!!!!"
     STATUS=ERROR
 else
-    logInfoMessage "I'll retain only ${MAX_IMAGES} images of ${COMPONENT_NAME}"
+    logInfoMessage "I'll retain only ${MAX_IMAGES} images of ${IMAGE_NAME}"
     sleep  $SLEEP_DURATION
 fi
 
