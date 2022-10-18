@@ -16,7 +16,8 @@ function removeImageTags() {
 
     for TAG in $TAGS_LIST
     do 
-        echo "Removing image ${IMAGE_NAME}:${TAG}"
+        logInfoMessage "Removing image ${IMAGE_NAME}:${TAG}"
+        docker rmi -f ${IMAGE_NAME}:${TAG}
     done
 }
 
