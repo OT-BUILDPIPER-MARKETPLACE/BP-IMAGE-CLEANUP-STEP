@@ -37,5 +37,20 @@ else
     sleep  $SLEEP_DURATION
     TAGS_LIST=`getImageOlderTags nginx stable-alpine`
     removeImageTags ${IMAGE_NAME} "${TAGS_LIST}"
+    STATUS="success"
 fi
 
+if [ "$STATUS" = "success" ]
+then
+  logInfoMessage "Congratulations clean happenned susccessfully!!!"
+  generateOutput ${ACTIVITY_SUB_TASK_CODE} true "Congratulations clean happenned susccessfully!!!"
+elif [ $VALIDATION_FAILURE_ACTION == "FAILURE" ]
+  then
+    logErrorMessage "Please check logs for failure!!!"
+    generateOutput ${ACTIVITY_SUB_TASK_CODE} false "Please check logs for failure!!!"
+    echo "build unsucessfull"
+    exit 1
+   else
+    logWarningMessage "Please check logs for failure!!!"
+    generateOutput ${ACTIVITY_SUB_TASK_CODE} true "Please check logs for failure!!!"
+fi
