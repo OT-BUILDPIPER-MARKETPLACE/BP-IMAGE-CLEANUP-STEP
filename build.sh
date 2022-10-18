@@ -3,7 +3,6 @@ source functions.sh
 
 STATUS="IN_PROGRESS"
 
-
 function getImageOlderTags() {
     IMAGE_NAME=$1
     RECENT_TAG=$2
