@@ -1,4 +1,6 @@
 #!/bin/bash
 source functions.sh
 
-logInfoMessage "I'll cleanup older images beyond ${MAX_IMAGES}"
+COMPONENT_NAME=`getComponentName`
+logInfoMessage "I'll retain only ${MAX_IMAGES} docker images of ${COMPONENT_NAME} "
+sleep  $SLEEP_DURATION
