@@ -3,6 +3,23 @@ source functions.sh
 
 STATUS="IN_PROGRESS"
 
+
+function getImageOlderTags() {
+    IMAGE_NAME=$1
+    RECENT_TAG=$2
+    docker images ${IMAGE_NAME} --filter "before=${IMAGE_NAME}:${RECENT_TAG}" --format "{{.Tag}}"
+}
+
+function removeImageTags() {
+    IMAGE_NAME=$1
+    TAGS_LIST="$2"
+
+    for TAG in $TAGS_LIST
+    do 
+        echo "Removing image ${IMAGE_NAME}:${TAG}"
+    done
+}
+
 if [ -z "$IMAGE_NAME" ]
 then
     logInfoMessage "Image name is not provided in env variable $IMAGE_NAME checking it in BP data"
@@ -21,19 +38,3 @@ else
     removeImageTags ${IMAGE_NAME} "${TAGS_LIST}"
 fi
 
-
-function getImageOlderTags() {
-    IMAGE_NAME=$1
-    RECENT_TAG=$2
-    docker images ${IMAGE_NAME} --filter "before=${IMAGE_NAME}:${RECENT_TAG}" --format "{{.Tag}}"
-}
-
-function removeImageTags() {
-    IMAGE_NAME=$1
-    TAGS_LIST="$2"
-
-    for TAG in $TAGS_LIST
-    do 
-        echo "Removing image ${IMAGE_NAME}:${TAG}"
-    done
-}
