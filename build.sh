@@ -1,7 +1,11 @@
 #!/bin/bash
-source functions.sh
+source /opt/buildpiper/shell-functions/functions.sh
+source /opt/buildpiper/shell-functions/log-functions.sh
+source /opt/buildpiper/shell-functions/str-functions.sh
+source /opt/buildpiper/shell-functions/file-functions.sh
+source /opt/buildpiper/shell-functions/aws-functions.sh
 
-STATUS="IN_PROGRESS"
+TASK_STATUS=0
 
 function getImageOlderTags() {
     IMAGE_NAME=$1
@@ -34,26 +38,13 @@ then
     logErrorMessage "Image name/tag is not available in BP data as well please check!!!!!!"
     logInfoMessage "Image Name -> ${IMAGE_NAME}"
     logInfoMessage "Image Tag -> ${IMAGE_TAG}"
-    STATUS=ERROR
+    TASK_STATUS=1
 else
     logInfoMessage "I'll remove all prior tagged images of ${IMAGE_NAME}:${IMAGE_TAG}"
     sleep  $SLEEP_DURATION
-    TAGS_LIST=`getImageOlderTags nginx stable-alpine`
+    TAGS_LIST=`getImageOlderTags ${IMAGE_NAME} ${IMAGE_TAG}`
     removeImageTags ${IMAGE_NAME} "${TAGS_LIST}"
-    STATUS="success"
+    TASK_STATUS=0
 fi
 
-if [ "$STATUS" = "success" ]
-then
-  logInfoMessage "Congratulations clean happenned susccessfully!!!"
-  generateOutput ${ACTIVITY_SUB_TASK_CODE} true "Congratulations clean happenned susccessfully!!!"
-elif [ $VALIDATION_FAILURE_ACTION == "FAILURE" ]
-  then
-    logErrorMessage "Please check logs for failure!!!"
-    generateOutput ${ACTIVITY_SUB_TASK_CODE} false "Please check logs for failure!!!"
-    echo "build unsucessfull"
-    exit 1
-   else
-    logWarningMessage "Please check logs for failure!!!"
-    generateOutput ${ACTIVITY_SUB_TASK_CODE} true "Please check logs for failure!!!"
-fi
+saveTaskStatus ${TASK_STATUS} ${ACTIVITY_SUB_TASK_CODE}
