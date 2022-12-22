@@ -42,7 +42,7 @@ then
 else
     logInfoMessage "I'll remove all prior tagged images of ${IMAGE_NAME}:${IMAGE_TAG}"
     sleep  $SLEEP_DURATION
-    TAGS_LIST=`getImageOlderTags nginx stable-alpine`
+    TAGS_LIST=`getImageOlderTags ${IMAGE_NAME} ${IMAGE_TAG}`
     removeImageTags ${IMAGE_NAME} "${TAGS_LIST}"
     TASK_STATUS=0
 fi
