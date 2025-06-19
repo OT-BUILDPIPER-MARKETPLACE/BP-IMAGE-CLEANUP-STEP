@@ -1,16 +1,21 @@
 #!/bin/bash
-source /opt/buildpiper/shell-functions/functions.sh
-source /opt/buildpiper/shell-functions/log-functions.sh
-source /opt/buildpiper/shell-functions/str-functions.sh
-source /opt/buildpiper/shell-functions/file-functions.sh
-source /opt/buildpiper/shell-functions/aws-functions.sh
+source functions.sh
+source log-functions.sh
+source str-functions.sh
+source file-functions.sh
+source aws-functions.sh
 
-TASK_STATUS=0
+IMAGE_NAME=`getComponentName`
+IMAGE_TAG=`getRepositoryTag`
 
 function getImageOlderTags() {
     IMAGE_NAME=$1
     RECENT_TAG=$2
-    docker images ${IMAGE_NAME} --filter "before=${IMAGE_NAME}:${RECENT_TAG}" --format "{{.Tag}}"
+    if [ -z "$RECENT_TAG" ]; then
+        docker images "${IMAGE_NAME}" --format "{{.Tag}}"
+    else
+        docker images "${IMAGE_NAME}" --format "{{.Tag}}" | grep -v -x "${RECENT_TAG}"
+    fi    
 }
 
 function removeImageTags() {
@@ -27,24 +32,21 @@ function removeImageTags() {
 if [ -z "$IMAGE_NAME" ] || [ -z "$IMAGE_TAG" ]
 then
     logInfoMessage "Image name/tag is not provided in env variable $IMAGE_NAME checking it in BP data"
-    logInfoMessage "Image Name -> ${IMAGE_NAME}"
-    logInfoMessage "Image Tag -> ${IMAGE_TAG}"
-    IMAGE_NAME=`getComponentName`
-    IMAGE_TAG=`getRepositoryTag`
+    logInfoMessage "Image Name -> $IMAGE_NAME"
+    logInfoMessage "Image Tag -> $IMAGE_TAG"
 fi
 
 if [ -z "$IMAGE_NAME" ] || [ -z "$IMAGE_TAG" ]
 then
-    logErrorMessage "Image name/tag is not available in BP data as well please check!!!!!!"
-    logInfoMessage "Image Name -> ${IMAGE_NAME}"
-    logInfoMessage "Image Tag -> ${IMAGE_TAG}"
+    logErrorMessage "Image name/tag is not available in BP data please check!!!!!!"
+    logInfoMessage "Image Name -> $IMAGE_NAME"
+    logInfoMessage "Image Tag -> $IMAGE_TAG"
     TASK_STATUS=1
 else
     logInfoMessage "I'll remove all prior tagged images of ${IMAGE_NAME}:${IMAGE_TAG}"
     sleep  $SLEEP_DURATION
-    TAGS_LIST=`getImageOlderTags ${IMAGE_NAME} ${IMAGE_TAG}`
-    removeImageTags ${IMAGE_NAME} "${TAGS_LIST}"
+    TAGS_LIST=`getImageOlderTags $IMAGE_NAME $IMAGE_TAG`
+    removeImageTags $IMAGE_NAME "$TAGS_LIST"
     TASK_STATUS=0
 fi
 
-saveTaskStatus ${TASK_STATUS} ${ACTIVITY_SUB_TASK_CODE}
