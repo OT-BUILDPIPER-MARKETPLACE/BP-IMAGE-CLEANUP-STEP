@@ -1,9 +1,10 @@
 #!/bin/bash
-source functions.sh
-source log-functions.sh
-source str-functions.sh
-source file-functions.sh
-source aws-functions.sh
+
+source /opt/buildpiper/shell-functions/functions.sh
+source /opt/buildpiper/shell-functions/log-functions.sh
+source /opt/buildpiper/shell-functions/str-functions.sh
+source /opt/buildpiper/shell-functions/file-functions.sh
+source /opt/buildpiper/shell-functions/aws-functions.sh
 
 IMAGE_NAME=`getComponentName`
 IMAGE_TAG=`getRepositoryTag`
