@@ -34,8 +34,6 @@ RUN chmod +x /home/buildpiper/build.sh && \
 
 USER buildpiper
 
-ENV INFRACOST_API_KEY xxxx
-
 WORKDIR /home/buildpiper
 
 ENV SLEEP_DURATION 5s
