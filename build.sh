@@ -32,6 +32,11 @@ function removeImageTags() {
     do 
         logInfoMessage "Removing image ${IMAGE_NAME}:${TAG}"
         docker rmi -f ${IMAGE_NAME}:${TAG}
+    
+        if [ $? -ne 0 ]; then
+            logErrorMessage "Failed to remove ${IMAGE_NAME}:${TAG}"
+            return 1
+        fi
     done
 }
 
@@ -62,9 +67,18 @@ else
     TAGS_LIST=`getImageOlderTags $IMAGE_NAME $IMAGE_TAG`
     removeImageTags $IMAGE_NAME "$TAGS_LIST"
     
+    if [ $? -ne 0 ]; then
+    add_event "IMAGE CLEANUP COMPLETE" "Failed" \
+              "Error while removing images" \
+              "Check logs"
+
+        exit 1
+    fi
+
     add_event "IMAGE CLEANUP COMPLETE" "Successful" \
               "Old docker images purged successfully" \
               "Retained Tag: ${IMAGE_TAG}"
               
     TASK_STATUS=0
 fi
+exit $TASK_STATUS
